@@ -2,50 +2,34 @@
    responsive.css — Crisp Mono / Sidebar layout
    ========================================= */
 
-/* ----- Tablet & smaller (768px以下): sidebar collapses to top horizontal scroll ----- */
+/* ----- Tablet & smaller (768px以下): sidebar collapses to top wrap-grid ----- */
 @media (max-width: 768px) {
   .layout {
     display: block;
     padding: var(--space-4) var(--space-4) 0;
   }
 
-  /* Sidebar → horizontal strip at top */
+  /* Sidebar → top block, no horizontal scroll */
   .sidebar {
     position: static;
     max-height: none;
     overflow-y: visible;
     margin-bottom: var(--space-4);
-    /* Bleed to edges of viewport for horizontal scroll feel */
-    margin-left: calc(var(--space-4) * -1);
-    margin-right: calc(var(--space-4) * -1);
-    padding: 0 var(--space-4);
+    padding-bottom: var(--space-4);
     border-bottom: 1px solid var(--border);
-    padding-bottom: var(--space-3);
   }
 
+  /* List → 2-column grid wrap */
   .sidebar__list {
-    flex-direction: row;
-    gap: var(--space-1);
-    overflow-x: auto;
-    padding-bottom: var(--space-2);
-    scrollbar-width: thin;
-    -webkit-overflow-scrolling: touch;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px var(--space-2);
   }
 
   .sidebar__item {
-    flex-shrink: 0;
-    grid-template-columns: auto auto;
+    width: 100%;
     padding: var(--space-2) var(--space-3);
-    width: auto;
-  }
-
-  /* Hide label & count on mobile, prefix-only chip */
-  .sidebar__label {
-    display: none;
-  }
-
-  .sidebar__count {
-    min-width: 0;
+    min-height: 36px;
   }
 
   /* Cards: 1 column when sidebar collapses */
@@ -53,21 +37,10 @@
     grid-template-columns: 1fr;
   }
 
-  /* Tag chips: horizontal scroll on tight screens */
+  /* Tag chips: wrap to multiple lines (no horizontal scroll) */
   .tag-filter {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: var(--space-1);
-    scrollbar-width: thin;
-    -webkit-overflow-scrolling: touch;
-    margin-left: calc(var(--space-4) * -1);
-    margin-right: calc(var(--space-4) * -1);
-    padding-left: var(--space-4);
-    padding-right: var(--space-4);
-  }
-
-  .tag-chip {
-    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: var(--space-1);
   }
 
   /* Site header tightening */
@@ -111,10 +84,9 @@
     padding: var(--space-3) var(--space-3) 0;
   }
 
-  .sidebar {
-    margin-left: calc(var(--space-3) * -1);
-    margin-right: calc(var(--space-3) * -1);
-    padding: 0 var(--space-3);
+  /* Sidebar list → 1 column on smartphone */
+  .sidebar__list {
+    grid-template-columns: 1fr;
   }
 
   .site-header {

@@ -960,3 +960,54 @@ CLAUDE.md                      ← エージェント向け指示
 - [ ] `web-design-parts-list.md` の 200 件版への追従（任意）
 - [ ] GitHub への公開・Pages デプロイ
 - [ ] 公開後の Lighthouse 再計測（gzip / brotli 適用後の Performance 確認）
+
+## 2026-05-09（GitHub 公開 + Netlify デプロイ）
+
+### 実施内容
+- リポジトリ初期化 → `main` ブランチで `https://github.com/shinmori2020/web-parts-reference` に push
+- Netlify でリポジトリ連携・自動デプロイ設定
+  - Build command 空欄 / Publish directory 空欄 / Branch: `main`
+  - 公開 URL: `https://web-parts-reference.netlify.app`
+  - Brotli 圧縮・自動 HTTPS・Git push トリガーの自動再デプロイが有効
+
+### 変更したファイル
+- 新規 git リポジトリ作成（コミット `156233c` 初期化、43 ファイル / 12,631 行）
+
+## 2026-05-09（レスポンシブ UI 改善：横スクロール → 折り返しグリッド）
+
+### 経緯
+公開後にタブレット幅以下で確認したところ、サイドバーがカテゴリ横スクロールになり「一目で全体が見えない」「prefix のみで日本語名が消える」状態だった。  
+横スクロール UI 自体を避けて、全件視認できる折り返しグリッドに転換。タグフィルターも同様の方針で統一。
+
+### 設計判断
+ユーザーと密度を相談した結果、**標準（prefix + 日本語名 + 件数）** を採用。  
+デスクトップのサイドバー構造をほぼそのまま上部に持ってくる形。
+
+### 変更内容（`css/responsive.css`）
+
+**768px 以下（タブレット）**：
+- `.sidebar`：`overflow-x: auto` + 負 margin による bleed を撤廃
+- `.sidebar__list`：`flex-direction: row` + `overflow-x: auto` → `display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px var(--space-2);`
+- `.sidebar__item`：`flex-shrink: 0; grid-template-columns: auto auto;` → `width: 100%; min-height: 36px;`（タッチターゲット 36px 確保）
+- `.sidebar__label`：`display: none` を削除（日本語名を表示）
+- `.tag-filter`：`flex-wrap: nowrap; overflow-x: auto;` 等を削除 → `flex-wrap: wrap; gap: var(--space-1);` に統一
+
+**480px 以下（スマホ）**：
+- `.sidebar__list`：`grid-template-columns: 1fr;`（1 列フル幅）
+- 旧 `.sidebar` の bleed margin 上書きは不要になり削除
+- 既存の `.sidebar__item` padding 上書きはそのまま
+
+### 維持した skills 準拠
+- アニメは静的レイアウト変更のみ（`transform` / `opacity` の規則に影響なし）
+- セマンティック HTML / ARIA / focus-visible すべて変更なし
+- BEM 命名維持
+- タッチターゲット 36px 以上を確保（accessibility skill 準拠）
+
+### 効果
+- 全 12 カテゴリ（タブレット 6 行 / スマホ 12 行）と全 9 タグが**横スクロールなしで一覧可能**に
+- 日本語ラベルが復活し、選択肢の意味を一目で把握できる
+- アクティブカテゴリの位置が明示的（横スクロール時は画面外に隠れていた）
+- コードもシンプル化（負 margin / scrollbar-width / -webkit-overflow-scrolling 等を削除）
+
+### 変更したファイル
+- `css/responsive.css`
